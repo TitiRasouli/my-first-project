@@ -6,6 +6,12 @@ resolution-markers = [
     "python_full_version < '3.14'",
 ]
 
+[manifest]
+members = [
+    "my-first-project",
+    "note-api",
+]
+
 [[package]]
 name = "annotated-doc"
 version = "0.0.4"
@@ -379,6 +385,11 @@ requires-dist = [
     { name = "fastapi", extras = ["standard"], specifier = ">=0.136.1" },
     { name = "uvicorn", specifier = ">=0.46.0" },
 ]
+
+[[package]]
+name = "note-api"
+version = "0.1.0"
+source = { virtual = "note-api" }
 
 [[package]]
 name = "pydantic"

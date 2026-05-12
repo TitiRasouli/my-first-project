@@ -1,15 +1,9 @@
 [project]
-name = "my-first-project"
+name = "note-api"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "fastapi[standard]>=0.136.1",
-    "uvicorn>=0.46.0",
-]
-
-[tool.uv.workspace]
-members = [
-    "note-api",
+    "sqlmodel>=0.0.38",
 ]
