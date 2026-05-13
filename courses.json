@@ -6,5 +6,77 @@
     "semester": 3,
     "ects": 6,
     "lecturer": "Prof. Dr. Wagner"
+  },
+  {
+    "id": 2,
+    "code": "TEST101",
+    "name": "Test Course",
+    "semester": 1,
+    "ects": 5,
+    "lecturer": "Test Professor"
+  },
+  {
+    "id": 3,
+    "code": "ABC123",
+    "name": "Test Course",
+    "semester": 1,
+    "ects": 5,
+    "lecturer": "Test Professor"
+  },
+  {
+    "id": 4,
+    "code": "XYZ789",
+    "name": "Test Course",
+    "semester": 1,
+    "ects": 5,
+    "lecturer": "Test Professor"
+  },
+  {
+    "id": 5,
+    "code": "HI123",
+    "name": "Test Course",
+    "semester": 1,
+    "ects": 5,
+    "lecturer": "Test Professor"
+  },
+  {
+    "id": 6,
+    "code": "ZB123",
+    "name": "Test Course",
+    "semester": 1,
+    "ects": 5,
+    "lecturer": "Test Professor"
+  },
+  {
+    "id": 7,
+    "code": "COURSE999",
+    "name": "Advanced Testing",
+    "semester": 2,
+    "ects": 6,
+    "lecturer": "Prof. Test"
+  },
+  {
+    "id": 8,
+    "code": "SAMPLE101",
+    "name": "Advanced Testing",
+    "semester": 2,
+    "ects": 6,
+    "lecturer": "Prof. Test"
+  },
+  {
+    "id": 9,
+    "code": "LAB101",
+    "name": "Advanced Testing",
+    "semester": 2,
+    "ects": 6,
+    "lecturer": "Prof. Test"
+  },
+  {
+    "id": 10,
+    "code": "XYZ123",
+    "name": "Advanced Testing",
+    "semester": 2,
+    "ects": 6,
+    "lecturer": "Prof. Test"
   }
 ]
