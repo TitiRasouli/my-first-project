@@ -271,12 +271,20 @@ def list_courses(
     min_ects: int = 10,
     search: str = ""
 ):
-    return {
-        "semester": semester,
-        "min_ects": min_ects,
-        "search": search
-    }
-from sqlmodel import select, or_, col
+    """List all courses with optional filters"""
+
+    courses_db, _ = load_courses()
+
+    filtered = courses_db
+
+    if semester is not None:
+        filtered = [c for c in filtered if c.semester == semester]
+
+    if min_ects > 0:
+        filtered = [c for c in filtered if c.ects >= min_ects]
+
+    return filtered
+
 
 @app.get("/notes")
 def list_notes(
@@ -461,3 +469,24 @@ def create_note(note: NoteCreate):
         session.refresh(db_note)
 
         return db_note
+@app.post("/courses", status_code=201)
+def create_course(course: CourseCreate) -> Course:
+
+    courses_db, course_id_counter = load_courses()
+
+    for existing in courses_db:
+        if existing.code.upper() == course.code.upper():
+            raise HTTPException(
+                status_code=409,
+                detail=f"Course with code '{course.code}' already exists"
+            )
+
+    new_course = Course(
+        id=course_id_counter,
+        **course.model_dump()
+    )
+
+    courses_db.append(new_course)
+    save_courses(courses_db)
+
+    return new_course
