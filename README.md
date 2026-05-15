@@ -11,7 +11,6 @@ A full-stack Notes Application built with:
 
 This project was developed step-by-step during the first 7 days of an Applied Programming course.
 
-⸻
 
 ## Project Overview
 
@@ -27,23 +26,20 @@ The application includes:
 * Filtering and statistics
 * Git/GitHub workflow
 
-⸻
 
 ## Technologies Used
 
-Technology       -   	Purpose
----------------------------------------------
-FastAPI	         -      Backend API framework
-SQLModel	     -      Database ORM
-SQLite	         -      Local database
-Streamlit	     -      Frontend UI
-Pytest	         -      Automated testing
-Requests	     -      API communication
-Uvicorn	         -      ASGI server
-Git	             -      Version control
-GitHub	         -      Remote repository  hosting
-
-⸻
+| Technology | Purpose |
+|---|---|
+| FastAPI | Backend API framework |
+| SQLModel | Database ORM |
+| SQLite | Local database |
+| Streamlit | Frontend UI |
+| Pytest | Automated testing |
+| Requests | API communication |
+| Uvicorn | ASGI server |
+| Git | Version control |
+| GitHub | Remote repository hosting |
 
 ## Day-by-Day Progress
 
@@ -68,14 +64,14 @@ Topics Learned
 * Learned how Python packages work
 * Connected project to GitHub
 
-# Important Commands
+## Important Commands
 
+```bash
 uv init
 uv add fastapi
 uv add sqlmodel
 uv add uvicorn
-
-⸻
+```
 
 ## Day 2 — FastAPI Basics
 
@@ -95,11 +91,13 @@ uv add uvicorn
     * POST endpoint
 * Learned automatic API docs generation
 
-# Example Endpoint
+## Example Endpoint
 
+```python
 @app.get("/")
 def root():
     return {"message": "Hello World"}
+```
 
 # Important Concepts
 
@@ -108,7 +106,6 @@ def root():
 * API routing
 * HTTP status codes
 
-⸻
 
 ## Day 3 — Data Models & Validation
 
@@ -127,11 +124,13 @@ def root():
 * Improved API consistency
 * Learned schema-based development
 
-# Example Model
+## Example Model
 
+```python
 class NoteCreate(BaseModel):
     title: str
     content: str
+```
 
 # Important Concepts
 
@@ -139,8 +138,6 @@ class NoteCreate(BaseModel):
 * Strong typing
 * Request parsing
 * API contracts
-
-⸻
 
 ## Day 4 — Database Integration
 
@@ -159,12 +156,14 @@ class NoteCreate(BaseModel):
 * Learned session management
 * Saved and retrieved data from database
 
-# Example Database Model
+## Example Database Model
 
+```python
 class Note(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     title: str
     content: str
+```
 
 # Important Concepts
 
@@ -173,7 +172,6 @@ class Note(SQLModel, table=True):
 * Persistent storage
 * CRUD database operations
 
-⸻
 
 ## Day 5 — CRUD Operations
 
@@ -194,13 +192,15 @@ Implemented complete CRUD functionality:
 * Update notes
 * Delete notes
 
-# Example Endpoints
+## Example Endpoints
 
+```python
 @app.post("/notes")
 @app.get("/notes")
 @app.put("/notes/{note_id}")
 @app.patch("/notes/{note_id}")
 @app.delete("/notes/{note_id}")
+``` 
 
 # Important Concepts
 
@@ -259,9 +259,11 @@ Built endpoints for:
 
 * Passed all 70 tests successfully
 
-# Example Test Command
+## Example Test Command
 
+```bash
 uv run pytest test_notes_api.py -v -x
+```
 
 # Major Challenges
 
@@ -317,13 +319,17 @@ Built a frontend application that:
 * requests
 * HTTP API integration
 
-# Example Streamlit Code
+## Example Streamlit Code
 
+```python
 import streamlit as st
 import requests
+
 BASE_URL = "http://127.0.0.1:8000"
+
 response = requests.get(f"{BASE_URL}/notes")
 notes = response.json()
+```
 
 # Major Challenges
 
@@ -342,15 +348,16 @@ notes = response.json()
 * Managing multiple servers
 * Interactive frontend design
 
-⸻
 
 ## Automated Testing
 
 The backend includes comprehensive automated tests.
 
-# Run Tests
+### Run Tests
 
+```bash
 uv run pytest test_notes_api.py -v
+```
 
 # Test Coverage Includes
 
@@ -363,72 +370,79 @@ uv run pytest test_notes_api.py -v
 * PATCH and PUT behavior
 * Date filtering
 
-⸻
+
 
 ### API Endpoints
+## Notes
 
-# Notes
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/notes` | Get all notes |
+| POST | `/notes` | Create note |
+| GET | `/notes/{id}` | Get single note |
+| PUT | `/notes/{id}` | Replace note |
+| PATCH | `/notes/{id}` | Partial update |
+| DELETE | `/notes/{id}` | Delete note |
 
-Method	         Endpoint	      Description
-GET	             /notes	          Get all notes
-POST.            /notes	          Create note
-GET	             /notes/{id }     Get single note
-PUT	             /notes/{id}	  Replace note
-PATCH	         /notes/{id}	  Partial update
-DELETE	         /notes/{id}	  Delete note
+## Tags
 
-# Tags
+| Method | Endpoint |
+|---|---|
+| GET | `/tags` |
+| GET | `/tags/{tag}/notes` |
 
-Method	       Endpoint
-GET	           /tags
-GET	           /tags/{tag}/notes
+## Categories
 
-# Categories
+| Method | Endpoint |
+|---|---|
+| GET | `/categories` |
+| GET | `/categories/{category}/notes` |
 
-Method	       Endpoint
-GET	           /categories
-GET	           /categories/{category}/notes
+## Statistics
 
-# Statistics
+| Method | Endpoint |
+|---|---|
+| GET | `/notes/stats` |
 
-Method	       Endpoint
-GET	           /notes/stats
-
-⸻
 
 ## Running the Project
 
-# 1. Clone Repository
+### 1. Clone Repository
 
+```bash
 git clone <repo-url>
 cd my-first-project
+```
 
-# 2. Install Dependencies
-
+2. Install Dependencies
+```bash
 uv sync
+```
 
-# 3. Run FastAPI Backend
+3. Run FastAPI Backend
 
+```bash
 uv run uvicorn main:app --reload
+```
 
 # Backend URL:
-
+```text
 http://127.0.0.1:8000
-
+```
 # Swagger Docs:
-
+```text
 http://127.0.0.1:8000/docs
-
+```
 ⸻
 
 # 4. Run Streamlit Frontend
-
+```bash
 uv run streamlit run frontend.py
-
+```
 # Frontend URL:
-
+```text
 http://localhost:8501
-
+```
 ⸻
 
 ## Project Structure
@@ -515,29 +529,17 @@ These challenges helped develop strong debugging and problem-solving skills.
 
 By the end of Day 7, the project successfully included:
 
-* FastAPI backend
-
-* SQLite database
-
-* SQLModel ORM integration
-
-* Full CRUD functionality
-
-* Advanced filtering system
-
-* Statistics endpoints
-
-* Tags and categories system
-
-* Automated testing (70 tests passed)
-
-* Streamlit frontend
-
-* Full-stack integration
-
-* GitHub deployment workflow
-
-⸻
+- [x] FastAPI backend
+- [x] SQLite database
+- [x] SQLModel ORM integration
+- [x] Full CRUD functionality
+- [x] Advanced filtering system
+- [x] Statistics endpoints
+- [x] Tags and categories system
+- [x] Automated testing (70 tests passed)
+- [x] Streamlit frontend
+- [x] Full-stack integration
+- [x] GitHub deployment workflow
 
 ## Future Improvements
 
