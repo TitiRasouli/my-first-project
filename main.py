@@ -1,13 +1,15 @@
+from curses import raw
+
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, field_validator
 from datetime import datetime, timezone
 import json
+from pydantic import model_validator
+from typing_extensions import Self
 from pathlib import Path
 from typing import Optional
 from datetime import datetime
-from sqlmodel import SQLModel, Field, Session, create_engine, Relationship, select
-from pydantic import BaseModel
-from sqlmodel import SQLModel, Field
+from sqlmodel import SQLModel, Field, Session, create_engine, Relationship, select, or_, col
 from datetime import datetime
 from fastapi import FastAPI
 from sqlmodel import select, or_, col
@@ -28,11 +30,18 @@ app = FastAPI(
     version="1.0.0"
 )
 
+ALLOWED_CATEGORIES = {
+    "work",
+    "personal",
+    "school",
+    "ideas"
+}
+
 class Note(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     title: str
     content: str
-    category: str
+    category: str = Field(..., description="Note category")
     created_at: datetime = Field(default_factory=datetime.now)
   
 
@@ -41,12 +50,6 @@ class Note(SQLModel, table=True):
 class Tag(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(unique=True)
-
-class NoteCreate(BaseModel):
-    title: str
-    content: str
-    category: str
-    tags: list[str] = []
 
 
 class NoteResponse(BaseModel):
@@ -80,11 +83,73 @@ class Course(BaseModel):
     ects: int
     lecturer: str
 
+ALLOWED_CATEGORIES = {
+    "work",
+    "personal",
+    "school",
+    "ideas"
+}    
+
 class NoteCreate(BaseModel):
-    title: str
-    content: str
+    title: str = Field(min_length=3, max_length=100)
+
+    content: str = Field(
+        min_length=1,
+        max_length=10000
+    )
+
     category: str
-    tags: list[str] = []
+
+    tags: list[str] = Field(
+        default_factory=list,
+        max_length=10
+    )
+
+    @field_validator("title")
+    @classmethod
+    def strip_title(cls, value: str) -> str:
+     return value.strip()
+
+    @field_validator("category")
+    @classmethod
+    def category_must_be_known(cls, value: str) -> str:
+        value = value.strip().lower()
+        if value not in ALLOWED_CATEGORIES:
+            raise ValueError(
+                f"category must be one of {sorted(ALLOWED_CATEGORIES)}"
+            )
+
+        return value
+    
+    @field_validator("tags")
+    @classmethod
+    def clean_tags(cls, raw: list[str]) -> list[str]:
+        cleaned: list[str] = []
+        seen: set[str] = set()
+
+        for tag in raw:
+            t = tag.strip().lower()
+
+            if not t:
+                raise ValueError("tags must not be empty strings")
+
+            if t in seen:
+                continue
+
+            seen.add(t)
+            cleaned.append(t)
+
+        return cleaned
+    @model_validator(mode="after")
+    def work_notes_need_work_tag(self) -> Self:
+
+
+         if self.category == "work" and "work" not in self.tags:
+          raise ValueError(
+            "work notes must include the 'work' tag"
+        )
+
+         return self
 
 class NoteUpdate(BaseModel):
     title: Optional[str] = None
