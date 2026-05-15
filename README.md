@@ -43,7 +43,6 @@ The application includes:
 
 ## Day-by-Day Progress
 
-⸻
 
 # Day 1 — Python Project Setup
 
@@ -209,7 +208,7 @@ Implemented complete CRUD functionality:
 * API consistency
 * HTTP semantics
 
-⸻
+
 
 ## Day 6 — Advanced Notes API & Testing
 
@@ -283,7 +282,6 @@ uv run pytest test_notes_api.py -v -x
 * API testing strategies
 * Systematic debugging workflows
 
-⸻
 
 ## Day 7 — Frontend with Streamlit
 
@@ -433,7 +431,7 @@ http://127.0.0.1:8000
 ```text
 http://127.0.0.1:8000/docs
 ```
-⸻
+
 
 # 4. Run Streamlit Frontend
 ```bash
@@ -443,7 +441,7 @@ uv run streamlit run frontend.py
 ```text
 http://localhost:8501
 ```
-⸻
+
 
 ## Project Structure
 
@@ -462,7 +460,7 @@ my-first-project/
 └── README.md
 ```
 
-⸻
+
 
 ## Key Concepts Learned
 
@@ -501,7 +499,7 @@ Backend Development
 * Incremental development
 * Testing-first thinking
 
-⸻
+
 
 ## Challenges Faced During Development
 
@@ -522,8 +520,7 @@ Backend Development
 * Git tracking unwanted files
 
 These challenges helped develop strong debugging and problem-solving skills.
-
-⸻
+ 
 
 ###############     Final Outcome After 7 Days.  #######################
 
@@ -557,7 +554,6 @@ Planned future improvements:
 * Dark mode UI
 * Better database architecture
 
-⸻
 
 # Author
 
@@ -567,7 +563,6 @@ Tahereh Rasouli
 
 Applied Programming Course – 2026
 
-⸻
 
 ## Conclusion
 
