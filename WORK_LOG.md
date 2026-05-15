@@ -170,6 +170,7 @@ I also learned how notes are temporarily stored in memory using:
 
 ```python
 notes_db = []
+```
 
 and how API behavior changes after server reloads.
 
@@ -238,28 +239,48 @@ Main challenges included:
 
 Specific problems I encountered included:
 
-Problem 1 — GET /notes/{note_id} returning 404
+##### Problem 1 — GET `/notes/{note_id}` returning 404
 
-Even after creating notes successfully, the endpoint returned: 404 Not Found
+Even after creating notes successfully, the endpoint returned:
 
-The issue happened because the application used temporary in-memory storage: notes_db = []
+```text
+404 Not Found
+```
+
+The issue happened because the application used temporary in-memory storage:
+
+```python
+notes_db = []
+```
 
 Whenever the server restarted or reloaded, all stored notes disappeared.
 
-Additionally, the load_notes() function was missing, which caused:
+Additionally, the `load_notes()` function was missing, which caused:
+
+```text
 NameError: name 'load_notes' is not defined
+```
 
-Problem 2 — POST /notes returning 422 
-The API returned: 422 Unprocessable Content
+##### Problem 2 — POST `/notes` returning 422
 
+The API returned:
+
+```text
+422 Unprocessable Content
+```
 The issue was caused by invalid JSON syntax in the request body.
 
 A trailing comma was accidentally added:
+
+```json
 {
-    "title": "Shopping List",
-    "content": "Milk, Eggs, Bread",
-} 
+  "title": "Shopping List",
+  "content": "Milk, Eggs, Bread",
+}
+```
+
 JSON does not allow a comma after the final item.
+
 
 
 
@@ -301,31 +322,35 @@ Main solutions included:
 
 For the 404 note retrieval issue, I:
 
-* Replaced the missing load_notes() usage with temporary in-memory storage
-* Added:
+- Replaced the missing `load_notes()` usage with temporary in-memory storage
+
+- Added:
+
+```python
 notes_db = []
 note_id_counter = 1
+```
 
-* Updated the POST /notes endpoint to append notes into notes_db
-* Updated GET /notes/{note_id} to search through notes_db
+- Updated the `POST /notes` endpoint to append notes into `notes_db`
+- Updated `GET /notes/{note_id}` to search through `notes_db`
 
 I also learned that notes disappear after server reloads because memory storage is temporary.
 
 For the 422 JSON issue, I:
 
-* Removed the trailing comma from the JSON request body
-* Corrected the request structure
-* Successfully verified:
-    * POST /notes
-    * GET /notes
-    * GET /notes/1
+- Removed the trailing comma from the JSON request body
+- Corrected the request structure
+- Successfully verified:
+  - `POST /notes`
+  - `GET /notes`
+  - `GET /notes/1`
 
 After fixing the issues:
 
-* Notes were successfully stored
-* Status code 201 Created was returned correctly
-* JSON responses worked properly
-* Automatic timestamps worked correctly
+- Notes were successfully stored
+- Status code `201 Created` was returned correctly
+- JSON responses worked properly
+- Automatic timestamps worked correctly
 
 By the end of Day 2, I had a much stronger understanding of FastAPI, request validation, backend debugging, and how API data persistence works.
 
@@ -428,65 +453,101 @@ because they were never created.
 
 ⸻
 
-#### Problem 3 — Wrong Default Type
+##### Problem 3 — Wrong Default Type
 
-I wrote: 
+I wrote:
+
+```python
 search: str = 0
-The variable type was str, but the default value was an integer.
+```
+
+The variable type was `str`, but the default value was an integer.
+
+##### Solution
+
+I changed it to:
+
+```python
+search: str = ""
 
 ⸻
 
-#### Problem 4 — Using pass Instead of Returning Data
+##### Problem 4 — Using `pass` Instead of Returning Data
 
 Some endpoints contained:
+
+```python
 pass
+```
+
 which caused the API to return no useful response.
 
 ⸻
 
-#### Problem 5 — Route Matching Confusion
+##### Problem 5 — Route Matching Confusion
 
 I learned that dynamic routes like:
+
+```text
 /test/{value}
+```
+
 can also match URLs such as:
+
+```text
 /test/123
+```
+
 This caused confusion about which endpoint FastAPI would use.
 
+
 ⸻
 
-#### Problem 6 — 404 Not Found
+##### Problem 6 — 404 Not Found
 
 While testing:
+
+```text
 /notes/1
+```
+
 I received:
+
+```text
 404 Not Found
-because no note with ID 1 existed yet.
+```
 
-⸻
+because no note with ID `1` existed yet.
 
-#### Problem 7 — 422 Unprocessable Content
+---
+
+##### Problem 7 — 422 Unprocessable Content
 
 I received:
+
+```text
 422 Unprocessable Content
+```
+
 because the JSON request body did not match the required Pydantic model.
 
 Some required fields such as:
+
+```text
 category
+```
+
 were missing.
 
 ⸻
 
-#### Problem 8 — NameError
+##### Problem 8 — NameError
 
 FastAPI showed errors like:
+
+```text
 NameError: load_notes is not defined
-
-
-
-
-
-
-
+```
 
 
 ---
@@ -507,11 +568,13 @@ Specific fixes included:
 
 ⸻
 
-Fix for Duplicate Endpoints
+### Fix for Duplicate Endpoints
 
-I removed the old /courses endpoint and kept only one version.
+I removed the old `/courses` endpoint and kept only one version.
 
 Final structure:
+
+```python
 @app.get("/courses")
 def list_courses(
     semester: int = None,
@@ -523,103 +586,146 @@ def list_courses(
         "min_ects": min_ects,
         "search": search
     }
+```
 
-Fix for Undefined Variables
+---
+
+### Fix for Undefined Variables
 
 Instead of returning variables that did not exist, I temporarily returned JSON data directly:
+
+```python
 return {
     "semester": semester,
     "min_ects": min_ects,
     "search": search
 }
+```
 
 This allowed me to continue testing the API structure safely.
 
-⸻
+---
 
-Fix for Wrong Default Type
+### Fix for Wrong Default Type
 
-I corrected: 
+I corrected:
+
+```python
 search: str = 0
+```
+
 to:
-search: str = "" 
+
+```python
+search: str = ""
+```
+
 so the type and default value matched correctly.
 
-⸻
+---
 
-Fix for pass Statements
+### Fix for `pass` Statements
 
 I replaced:
+
+```python
 pass
+```
+
 with actual JSON responses.
 
 Example:
+
+```python
 @app.get("/students/{student_id}/courses/{course_id}")
 def get_student_course(student_id: int, course_id: int):
+
     return {
         "student_id": student_id,
         "course_id": course_id
     }
+```
 
-Fix for Route Matching Problems
+---
 
-I learned that: 
+### Fix for Route Matching Problems
+
+I learned that:
+
+```text
 Route order matters
+```
 
 Specific routes should come before dynamic routes.
 
-Correct structure: 
+Correct structure:
+
+```python
 @app.get("/test/123")
 @app.get("/test/{value}")
+```
 
-⸻
+---
 
-Fix for 404 Errors
+### Fix for 404 Errors
 
-Before testing: 
- GET /notes/1
+Before testing:
+
+```text
+GET /notes/1
+```
 
 I first created a note using:
+
+```text
 POST /notes
+```
 
 After creating the note successfully, the GET request worked correctly.
 
 ⸻
 
-Fix for 422 Validation Errors
+### Fix for 422 Validation Errors
 
 I updated the JSON request body to include all required fields.
 
 Correct example:
+
+```json
 {
     "title": "Exam Prep",
     "content": "Study chapters 1–5",
     "category": "study"
 }
+```
 
-Fix for NameError Problems
+---
+
+### Fix for NameError Problems
 
 I added missing helper functions and ensured they were defined before being used.
 
-What I learned today
+---
+
+## What I Learned Today
 
 During Day 3 I learned:
 
-* REST API structure
-* Path parameters
-* Query parameters
-* Route matching behavior
-* Nested resources
-* HTTP status codes
-* FastAPI validation
-* Swagger testing
-* Importance of endpoint order
-* Difference between fixed and dynamic routes
-* Pagination concepts
-* Sorting logic
-* PATCH vs PUT behavior
-* Common backend debugging techniques
-* Better API architecture practices
+- REST API structure
+- Path parameters
+- Query parameters
+- Route matching behavior
+- Nested resources
+- HTTP status codes
+- FastAPI validation
+- Swagger testing
+- Importance of endpoint order
+- Difference between fixed and dynamic routes
+- Pagination concepts
+- Sorting logic
+- PATCH vs PUT behavior
+- Common backend debugging techniques
+- Better API architecture practices
 
 ---
 
@@ -628,100 +734,99 @@ During Day 3 I learned:
 ### Day 4
 
 #### 1. ✅ What did I accomplish?
+
 Today I worked on FastAPI testing, pytest integration, and SQLModel migration.
-I created automated tests for API endpoints using pytest and FastAPI TestClient.
+
+I created automated tests for API endpoints using `pytest` and FastAPI `TestClient`.
 
 I completed exercises related to:
 
-* Creating notes
-* Listing notes
-* Creating courses
-* Error handling
-* Validation testing
+- Creating notes
+- Listing notes
+- Creating courses
+- Error handling
+- Validation testing
 
 I also migrated parts of the Notes API from JSON-based storage to SQLModel and SQLite.
 
-Tools and technologies used
+### Tools and Technologies Used
 
-* Python
-* FastAPI
-* pytest
-* SQLModel
-* SQLite
-* VS Code
-* Git & GitHub
+- Python
+- FastAPI
+- pytest
+- SQLModel
+- SQLite
+- VS Code
+- Git & GitHub
 
-What I learned or practiced
+### What I Learned or Practiced
 
-* API testing with pytest
-* Using TestClient
-* Arrange-Act-Assert testing structure
-* SQLModel basics
-* Debugging traceback errors
-* Git workflow
+- API testing with pytest
+- Using TestClient
+- Arrange–Act–Assert testing structure
+- SQLModel basics
+- Debugging traceback errors
+- Git workflow
 
 
----
+#### 2. 🚧 What Challenges Did I Face?
 
-#### 2. 🚧 What challenges did I face?
 I faced several debugging and migration problems while combining old JSON-based logic with the new SQLModel database structure.
 
-Difficulties and problems
+### Difficulties and Problems
 
-* Duplicate endpoint definitions
-* Duplicate SQLModel tables
-* Validation errors
-* SQLAlchemy relationship errors
-* Cached pytest issues
-* Conflicts between old and new code
+- Duplicate endpoint definitions
+- Duplicate SQLModel tables
+- Validation errors
+- SQLAlchemy relationship errors
+- Cached pytest issues
+- Conflicts between old and new code
 
-Errors encountered
+### Errors Encountered
 
-* NameError
-* ValidationError
-* HTTPException 404
-* NoForeignKeysError
-* InvalidRequestError
-* 409 Conflict
+- `NameError`
+- `ValidationError`
+- `HTTPException 404`
+- `NoForeignKeysError`
+- `InvalidRequestError`
+- `409 Conflict`
 
-One difficult part was identifying which endpoints were still using the old notes_db logic.
-
+One difficult part was identifying which endpoints were still using the old `notes_db` logic.
 
 ---
 
-#### 3. 💡 How did I overcome them?
+#### 3. 💡 How Did I Overcome Them?
+
 I solved the issues step by step by debugging each error carefully and testing after every change.
 
-Strategies used
+### Strategies Used
 
-* Reading pytest tracebacks
-* Using VS Code global search
-* Removing duplicated code
-* Refactoring endpoints gradually
-* Running tests after each fix
+- Reading pytest tracebacks
+- Using VS Code global search
+- Removing duplicated code
+- Refactoring endpoints gradually
+- Running tests after each fix
 
-What helped me
+### What Helped Me
 
-* ChatGPT debugging assistance
-* FastAPI documentation
-* SQLModel documentation
-* pytest error messages
+- ChatGPT debugging assistance
+- FastAPI documentation
+- SQLModel documentation
+- pytest error messages
 
-What I learned from solving the problems
+### What I Learned from Solving the Problems
 
-* How pytest works internally
-* How FastAPI testing is structured
-* How to debug SQLModel and Pydantic issues
-* Importance of separating old and new application logic
+- How pytest works internally
+- How FastAPI testing is structured
+- How to debug SQLModel and Pydantic issues
+- Importance of separating old and new application logic
 
-Questions or future improvements
+### Questions or Future Improvements
 
-* Better SQLModel relationships
-* More advanced API tests
-* PATCH endpoint improvements
-* Authentication support
-
----
+- Better SQLModel relationships
+- More advanced API tests
+- PATCH endpoint improvements
+- Authentication support
 
 ### Day 5
 
@@ -792,9 +897,16 @@ I also updated and fixed the pytest test suite to match the new stricter validat
 
 At first, multiple tests failed because the validation rules became stricter. I debugged each failing test individually and updated the payloads accordingly.
 
-Final pytest result:
-Bash: uv run pytest
-Plain text: 5 passed
+### Final pytest Result
+
+```bash
+uv run pytest
+```
+
+```text
+5 passed
+```
+
 Finally, I committed and pushed all project changes to GitHub successfully.
 
 Technologies and tools used today:
