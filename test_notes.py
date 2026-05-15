@@ -7,11 +7,13 @@ def test_create_note():
     note_data = {
         "title": "Pytest Note",
         "content": "Testing FastAPI",
-        "category": "Testing",
-        "tags": ["pytest"]
+        "category": "work",
+        "tags": ["work", "pytest"]
     }
 
     response = client.post("/notes", json=note_data)
+    
+    print(response.json())
 
     assert response.status_code == 201
 
@@ -19,7 +21,7 @@ def test_create_note():
 
     assert "id" in result
     assert result["title"] == "Pytest Note"
-    assert result["category"] == "Testing"
+    assert result["category"] == "work"
 def test_list_notes():
 
     response = client.get("/notes")
@@ -36,4 +38,3 @@ def test_create_note_missing_field():
     response = client.post("/notes", json=invalid_note)
 
     assert response.status_code == 422
-        

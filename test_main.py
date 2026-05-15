@@ -5,7 +5,7 @@ client = TestClient(app)
 
 def test_create_course():
     course_data = {
-        "code": "XYZ123",
+        "code": "SADV101",
         "name": "Advanced Testing",
         "semester": 2,
         "ects": 6,
@@ -20,7 +20,7 @@ def test_create_course():
     result = response.json()
 
     assert "id" in result
-    assert result["code"] == "XYZ123"
+    assert result["code"] == "SADV101"
     assert result["name"] == "Advanced Testing"
     assert result["semester"] == 2
     assert result["ects"] == 6

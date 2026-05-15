@@ -78,5 +78,45 @@
     "semester": 2,
     "ects": 6,
     "lecturer": "Prof. Test"
+  },
+  {
+    "id": 11,
+    "code": "BCS101",
+    "name": "Advanced Testing",
+    "semester": 2,
+    "ects": 6,
+    "lecturer": "Prof. Test"
+  },
+  {
+    "id": 12,
+    "code": "QCS101",
+    "name": "Advanced Testing",
+    "semester": 2,
+    "ects": 6,
+    "lecturer": "Prof. Test"
+  },
+  {
+    "id": 13,
+    "code": "ADV101",
+    "name": "Advanced Testing",
+    "semester": 2,
+    "ects": 6,
+    "lecturer": "Prof. Test"
+  },
+  {
+    "id": 14,
+    "code": "LADV101",
+    "name": "Advanced Testing",
+    "semester": 2,
+    "ects": 6,
+    "lecturer": "Prof. Test"
+  },
+  {
+    "id": 15,
+    "code": "SADV101",
+    "name": "Advanced Testing",
+    "semester": 2,
+    "ects": 6,
+    "lecturer": "Prof. Test"
   }
 ]

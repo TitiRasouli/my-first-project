@@ -1,20 +1,31 @@
-from curses import raw
-
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, Field, field_validator
-from datetime import datetime, timezone
 import json
-from pydantic import model_validator
-from typing_extensions import Self
 from pathlib import Path
-from typing import Optional
-from datetime import datetime
-from sqlmodel import SQLModel, Field, Session, create_engine, Relationship, select, or_, col
-from datetime import datetime
-from fastapi import FastAPI
-from sqlmodel import select, or_, col
-from typing import Annotated
-from fastapi import Depends
+from typing import Optional, Annotated
+from datetime import datetime, timezone
+
+from fastapi import FastAPI, HTTPException, Depends
+
+from pydantic import (
+    BaseModel,
+    Field as PydanticField,
+    field_validator,
+    model_validator,
+    ConfigDict,
+)
+
+from typing_extensions import Self
+
+from sqlmodel import (
+    SQLModel,
+    Field,
+    Session,
+    create_engine,
+    Relationship,
+    select,
+    or_,
+    col,
+)
+
 COURSES_FILE = Path("courses.json")
 engine = create_engine("sqlite:///notes.db")
 
@@ -43,13 +54,22 @@ class Note(SQLModel, table=True):
     content: str
     category: str = Field(..., description="Note category")
     created_at: datetime = Field(default_factory=datetime.now)
-  
-
-
 
 class Tag(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    name: str = Field(unique=True)
+
+    id: int | None = Field(default=None, primary_key=True)
+
+    name: str = Field(
+        min_length=2,
+        max_length=30,
+        regex=r"^[a-z0-9-]+$",
+        unique=True,
+        index=True
+    )
+    @field_validator("name")
+    @classmethod
+    def clean_name(cls, value: str) -> str:
+        return value.strip().lower()
 
 
 class NoteResponse(BaseModel):
@@ -59,9 +79,8 @@ class NoteResponse(BaseModel):
     category: str
     created_at: datetime
     tags: list[str] = []
-
-    class Config:
-        from_attributes = True
+    
+    model_config = ConfigDict(from_attributes=True)
 
 engine = create_engine("sqlite:///notes.db")
 
@@ -91,65 +110,77 @@ ALLOWED_CATEGORIES = {
 }    
 
 class NoteCreate(BaseModel):
-    title: str = Field(min_length=3, max_length=100)
 
-    content: str = Field(
-        min_length=1,
-        max_length=10000
+    model_config = ConfigDict(
+        str_strip_whitespace=True,
+        extra="forbid"
     )
 
-    category: str
-
-    tags: list[str] = Field(
+    title: str = PydanticField(min_length=3, max_length=100)
+    content: str = PydanticField(min_length=1, max_length=10000)
+    category: str = PydanticField(
+        min_length=2,
+        max_length=30,
+        pattern=r"^[a-z]+$"
+    )
+    tags: list[str] = PydanticField(
         default_factory=list,
         max_length=10
     )
 
     @field_validator("title")
     @classmethod
-    def strip_title(cls, value: str) -> str:
-     return value.strip()
+    def validate_title(cls, value: str) -> str:
+        if not value.strip():
+            raise ValueError("title cannot be empty")
+        return value
 
     @field_validator("category")
     @classmethod
-    def category_must_be_known(cls, value: str) -> str:
-        value = value.strip().lower()
-        if value not in ALLOWED_CATEGORIES:
-            raise ValueError(
-                f"category must be one of {sorted(ALLOWED_CATEGORIES)}"
-            )
+    def validate_category(cls, value: str) -> str:
+        value = value.lower()
+
+        allowed = {
+            "work",
+            "personal",
+            "school",
+            "ideas",
+            "general"
+        }
+
+        if value not in allowed:
+            raise ValueError("invalid category")
 
         return value
-    
+
     @field_validator("tags")
     @classmethod
     def clean_tags(cls, raw: list[str]) -> list[str]:
         cleaned: list[str] = []
-        seen: set[str] = set()
 
         for tag in raw:
-            t = tag.strip().lower()
+            tag = tag.strip().lower()
 
-            if not t:
-                raise ValueError("tags must not be empty strings")
+            if not tag:
+                raise ValueError("empty tag not allowed")
 
-            if t in seen:
-                continue
+            if len(tag) < 2:
+                raise ValueError("tag too short")
 
-            seen.add(t)
-            cleaned.append(t)
+            if tag not in cleaned:
+                cleaned.append(tag)
 
         return cleaned
+
     @model_validator(mode="after")
-    def work_notes_need_work_tag(self) -> Self:
+    def validate_work_tag(self) -> Self:
+        # needs BOTH category and tags
+        if self.category == "work" and "work" not in self.tags:
+            raise ValueError(
+                "work notes must include the 'work' tag"
+            )
 
-
-         if self.category == "work" and "work" not in self.tags:
-          raise ValueError(
-            "work notes must include the 'work' tag"
-        )
-
-         return self
+        return self
 
 class NoteUpdate(BaseModel):
     title: Optional[str] = None
@@ -178,7 +209,7 @@ def create_note(note: NoteCreate) -> Note:
         content=note.content,
         category=note.category,
         tags=note.tags,
-        created_at=datetime.now(timezone.utc).isoformat()
+        created_at=datetime.now(timezone.utc)
     )
 
     return new_note   
@@ -322,7 +353,7 @@ def update_note(
         content=note.content,
         category=note.category,
         tags=[tag.name for tag in note.tags],
-        created_at=str(note.created_at)
+        created_at=note.created_at
     )
 @app.delete("/notes/{note_id}", status_code=204)
 def delete_note(
@@ -398,3 +429,4 @@ def create_course(course: CourseCreate) -> Course:
     save_courses(courses_db)
 
     return new_course
+
