@@ -2,9 +2,12 @@ import json
 from pathlib import Path
 from typing import Optional, Annotated
 from datetime import datetime, timezone
-
+from icecream import ic
 from fastapi import FastAPI, HTTPException, Depends
-
+from requests import session
+from sqlmodel import JSON, Column, Session
+from typing import Annotated
+from fastapi import Depends
 from pydantic import (
     BaseModel,
     Field as PydanticField,
@@ -12,7 +15,7 @@ from pydantic import (
     model_validator,
     ConfigDict,
 )
-
+from sqlalchemy import Column, JSON
 from typing_extensions import Self
 
 from sqlmodel import (
@@ -25,6 +28,8 @@ from sqlmodel import (
     or_,
     col,
 )
+
+from test_notes_api import note
 
 COURSES_FILE = Path("courses.json")
 engine = create_engine("sqlite:///notes.db")
@@ -54,11 +59,11 @@ class Note(SQLModel, table=True):
     content: str
     category: str = Field(..., description="Note category")
     created_at: datetime = Field(default_factory=datetime.now)
+    tags: list[str] = Field(default_factory=list, sa_column=Column(JSON))
+
 
 class Tag(SQLModel, table=True):
-
     id: int | None = Field(default=None, primary_key=True)
-
     name: str = Field(
         min_length=2,
         max_length=30,
@@ -71,18 +76,6 @@ class Tag(SQLModel, table=True):
     def clean_name(cls, value: str) -> str:
         return value.strip().lower()
 
-
-class NoteResponse(BaseModel):
-    id: int
-    title: str
-    content: str
-    category: str
-    created_at: datetime
-    tags: list[str] = []
-    
-    model_config = ConfigDict(from_attributes=True)
-
-engine = create_engine("sqlite:///notes.db")
 
 class CourseCreate(BaseModel):
     """Model for creating courses (no ID)"""
@@ -107,7 +100,7 @@ ALLOWED_CATEGORIES = {
     "personal",
     "school",
     "ideas"
-}    
+} 
 
 class NoteCreate(BaseModel):
 
@@ -127,7 +120,6 @@ class NoteCreate(BaseModel):
         default_factory=list,
         max_length=10
     )
-
     @field_validator("title")
     @classmethod
     def validate_title(cls, value: str) -> str:
@@ -175,18 +167,18 @@ class NoteCreate(BaseModel):
     @model_validator(mode="after")
     def validate_work_tag(self) -> Self:
         # needs BOTH category and tags
-        if self.category == "work" and "work" not in self.tags:
-            raise ValueError(
-                "work notes must include the 'work' tag"
-            )
+      #if self.category == "work" and "work" not in self.tags:
+            #raise ValueError(
+              #  "work notes must include the 'work' tag"
+           # )
 
         return self
 
 class NoteUpdate(BaseModel):
-    title: Optional[str] = None
-    content: Optional[str] = None
-    category: Optional[str] = None
-    tags: Optional[list[str]] = None   
+    title: str | None = None
+    content: str | None = None
+    category: str | None = None
+    tags: list[str] | None = None  
 
 
 
@@ -201,9 +193,23 @@ def save_notes(notes):
             f,
             indent=2
         )
-@app.post("/notes", status_code=201)
-def create_note(note: NoteCreate) -> Note:
+
+class NoteResponse(BaseModel):
+    id: int | None
+    title: str
+    content: str
+    category: str
+    created_at: datetime
+    tags: list[str] = []
+
+    model_config = ConfigDict(from_attributes=True)
+
+engine = create_engine("sqlite:///notes.db")
+
+@app.post("/notes", status_code=201, response_model=NoteResponse)
+def create_note(note: NoteCreate, session: SessionDep) -> Note:
     """Create a new note"""
+
     new_note = Note(
         title=note.title,
         content=note.content,
@@ -212,7 +218,27 @@ def create_note(note: NoteCreate) -> Note:
         created_at=datetime.now(timezone.utc)
     )
 
-    return new_note   
+    session.add(new_note)
+    session.commit()
+    session.refresh(new_note) 
+
+    #new_note.tags = note.tags
+
+    return NoteResponse(
+    id=new_note.id,
+    title=new_note.title,
+    content=new_note.content,
+    category=new_note.category,
+    created_at=new_note.created_at,
+    tags=note.tags,
+)
+
+@app.get("/")
+def root():
+    return {
+        "message": "Notes API",
+        "status": "ok"
+    }  
 
 @app.get("/test/{value}")
 def test_value(value: str):
@@ -288,12 +314,19 @@ def list_notes(
     session: SessionDep,
     category: str = None,
     search: str = None,
-    tag: str = None
-) -> list[NoteResponse]:
+    tag: str = None,
+    created_after: datetime | None = None,
+    created_before: datetime | None = None,
+)-> list[NoteResponse]:
     """List notes with filters"""
     
     statement = select(Note)
-    
+    if created_after:
+        statement = statement.where(Note.created_at >= created_after)
+
+    if created_before:
+        statement = statement.where(Note.created_at <= created_before)
+
     if category:
 
         statement = statement.where(Note.category == category)
@@ -307,23 +340,124 @@ def list_notes(
             )
         )
     
-    if tag:
-        tag_lower = tag.lower()
-        statement = statement.join(Note.tags).where(Tag.name == tag_lower)
+    #if tag:
+        #tag_lower = tag.lower()
+        #statement = statement.join(Note.tags).where(Tag.name == tag_lower)
     
     notes = session.exec(statement).all()
-    
+    if tag:
+       tag_lower = tag.lower()
+       notes = [
+         n for n in notes
+         if tag_lower in (n.tags or [])
+    ]
     return [
         NoteResponse(
             id=n.id,
             title=n.title,
             content=n.content,
             category=n.category,
-            tags=[tag.name for tag in n.tags],
-            created_at=n.created_at.isoformat()
+            tags=n.tags or [],
+            created_at=n.created_at
         )
         for n in notes
     ]
+
+@app.get("/notes/stats")
+def notes_stats(session: SessionDep):
+    notes = session.exec(select(Note)).all()
+
+    all_tags = []
+    for note in notes:
+        all_tags.extend(note.tags or [])
+
+
+    by_category = {}
+
+    for note in notes:
+        by_category[note.category] = by_category.get(
+    note.category, 0
+) + 1
+
+    return {
+    "total_notes": len(notes),
+    "unique_tags_count": len(set(all_tags)),
+    "top_tags": [],
+    "by_category": by_category,
+}  
+@app.get("/categories")
+def list_categories(session: SessionDep):
+    notes = session.exec(select(Note)).all()
+
+    categories = sorted(
+        set(note.category for note in notes)
+    )
+
+    return categories
+
+@app.get("/categories/{category}/notes", response_model=list[NoteResponse])
+def notes_by_category(category: str, session: SessionDep):
+    category_lower = category.lower()
+    notes = session.exec(
+        select(Note).where(Note.category == category_lower)
+    ).all()
+
+    return [
+        NoteResponse(
+            id=n.id,
+            title=n.title,
+            content=n.content,
+            category=n.category,
+            created_at=n.created_at,
+            tags=n.tags or [],
+        )
+        for n in notes
+    ]
+
+@app.get("/notes/{note_id}", response_model=NoteResponse)
+def get_note(note_id: int, session: SessionDep) -> NoteResponse:
+    note = session.get(Note, note_id)
+
+    if note is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Note not found"
+        )
+
+    return NoteResponse(
+        id=note.id,
+        title=note.title,
+        content=note.content,
+        category=note.category,
+        created_at=note.created_at,
+        tags=note.tags or [],
+    )
+
+@app.patch("/notes/{note_id}", response_model=NoteResponse)
+def patch_note(note_id: int, note_update: NoteUpdate, session: SessionDep):
+    note = session.get(Note, note_id)
+
+    if note is None:
+        raise HTTPException(status_code=404, detail="Note not found")
+
+    data = note_update.model_dump(exclude_unset=True)
+
+    for key, value in data.items():
+        setattr(note, key, value)
+
+    session.add(note)
+    session.commit()
+    session.refresh(note)
+
+    return NoteResponse(
+        id=note.id,
+        title=note.title,
+        content=note.content,
+        category=note.category,
+        created_at=note.created_at,
+        tags=note.tags or [],
+    )
+
 @app.put("/notes/{note_id}")
 def update_note(
     note_id: int,
@@ -342,6 +476,7 @@ def update_note(
     note.title = note_update.title
     note.content = note_update.content
     note.category = note_update.category
+    note.tags = note_update.tags
 
     session.add(note)
     session.commit()
@@ -352,7 +487,7 @@ def update_note(
         title=note.title,
         content=note.content,
         category=note.category,
-        tags=[tag.name for tag in note.tags],
+        tags=note.tags or [],
         created_at=note.created_at
     )
 @app.delete("/notes/{note_id}", status_code=204)
@@ -372,41 +507,38 @@ def delete_note(
     session.commit()
     
     return 
-@app.get("/tags")
-def list_tags(session: SessionDep) -> list[str]:
-    """Get all unique tags from the Tag table"""
-    statement = select(Tag)
-    tags = session.exec(statement).all()
-    
-    return sorted([tag.name for tag in tags])
 
-@app.get("/tags/{tag_name}/notes")
-def get_notes_by_tag(tag_name: str, session: SessionDep) -> list[NoteResponse]:
-    """Get all notes with specific tag"""
-    tag_lower = tag_name.lower()
-    statement = select(Tag).where(Tag.name == tag_lower)
-    tag = session.exec(statement).first()
-    
-    if not tag:
-        return [] 
-    
-    return [
-        NoteResponse(
-            title=note.title,
-            content=note.content,
-            category=note.category,
-            tags=[tag.name for tag in note.tags],
-            created_at=note.created_at.isoformat()
-        )
-        for note in tag.notes
+@app.get("/tags")
+def list_tags(session: SessionDep):
+    notes = session.exec(select(Note)).all()
+
+    all_tags = []
+    for note in notes:
+        all_tags.extend(note.tags or [])
+
+    return sorted(set(all_tags))
+
+@app.get("/tags/{tag}/notes", response_model=list[NoteResponse])
+def notes_by_tag(tag: str, session: SessionDep):
+    tag_lower = tag.lower()
+    notes = session.exec(select(Note)).all()
+
+    matching_notes = [
+        n for n in notes
+        if tag_lower in (n.tags or [])
     ]
 
-def get_session():
-    with Session(engine) as session:
-        yield session
-
-
-SQLModel.metadata.create_all(engine)
+    return [
+        NoteResponse(
+            id=n.id,
+            title=n.title,
+            content=n.content,
+            category=n.category,
+            created_at=n.created_at,
+            tags=n.tags or [],
+        )
+        for n in matching_notes
+    ]
 
 @app.post("/courses", status_code=201)
 def create_course(course: CourseCreate) -> Course:
@@ -429,4 +561,3 @@ def create_course(course: CourseCreate) -> Course:
     save_courses(courses_db)
 
     return new_course
-
