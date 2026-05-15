@@ -433,6 +433,9 @@ http://localhost:8501
 
 ## Project Structure
 
+## Project Structure
+
+```text
 my-first-project/
 │
 ├── main.py
@@ -443,6 +446,7 @@ my-first-project/
 ├── .gitignore
 ├── notes.db
 └── README.md
+```
 
 ⸻
 
