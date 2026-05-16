@@ -19,7 +19,7 @@ _Reflect on the activities, exercises, and work you completed today._
 - What did you learn or practice?
 
 
----
+
 
 ## 2. 🚧 What challenges did I face?
 
@@ -32,7 +32,7 @@ _Describe any difficulties, obstacles, or confusing moments you encountered._
 - What felt frustrating or confusing?
 
 
----
+
 
 ## 3. 💡 How did I overcome them?
 
@@ -45,7 +45,7 @@ _Explain how you overcame the challenges or what help you needed._
 - What questions do you still have?
 
 
----
+
 
 ## Week 1
 
@@ -93,7 +93,7 @@ I practiced:
 Because I was still learning the basics, I ran and rebuilt the project multiple times to better understand the workflow and structure.
 
 
----
+
 
 #### 2. What challenges did I face?
 
@@ -116,7 +116,7 @@ Some challenges included:
 I also accidentally deleted or overwrote parts of the code several times and had to recreate sections of the project repeatedly.
 
 
----
+
 
 #### 3. How did I overcome them?
 
@@ -143,7 +143,6 @@ I learned that:
 By the end of the session, I successfully ran the FastAPI server, tested multiple endpoints, and gained a much better understanding of how APIs work.
 
 
----
 
 ### Day 2
 
@@ -202,9 +201,6 @@ Technologies and tools used today:
 * Git & GitHub
 
 
-
-
----
 
 #### 2.    What challenges did I face?
 
@@ -284,8 +280,6 @@ JSON does not allow a comma after the final item.
 
 
 
----
-
 #### 3. 💡 How did I overcome them?
 
 I solved the problems step by step by carefully reading terminal errors and debugging each issue individually.
@@ -355,7 +349,6 @@ After fixing the issues:
 By the end of Day 2, I had a much stronger understanding of FastAPI, request validation, backend debugging, and how API data persistence works.
 
 
----
 
 ### Day 3
 
@@ -404,7 +397,7 @@ Technologies and tools used today:
 - Git & GitHub
 
 
----
+
 
 #### 2. 🚧 What challenges did I face?
 
@@ -428,7 +421,7 @@ Main challenges included:
 
 Specific problems included:
 
----
+
 
 ##### Problem 1 — Duplicate `/courses` Endpoint
 
@@ -442,7 +435,7 @@ Duplicate Operation ID
 
 Swagger/OpenAPI became confused because two endpoints had the same route and function name.
 
-⸻
+
 
 ##### Problem 2 — Undefined Variables
 
@@ -451,7 +444,7 @@ filtered_courses
 all_courses
 because they were never created.
 
-⸻
+
 
 ##### Problem 3 — Wrong Default Type
 
@@ -470,7 +463,7 @@ I changed it to:
 ```python
 search: str = ""
 
-⸻
+
 
 ##### Problem 4 — Using `pass` Instead of Returning Data
 
@@ -482,7 +475,7 @@ pass
 
 which caused the API to return no useful response.
 
-⸻
+
 
 ##### Problem 5 — Route Matching Confusion
 
@@ -501,7 +494,7 @@ can also match URLs such as:
 This caused confusion about which endpoint FastAPI would use.
 
 
-⸻
+
 
 ##### Problem 6 — 404 Not Found
 
@@ -519,7 +512,7 @@ I received:
 
 because no note with ID `1` existed yet.
 
----
+
 
 ##### Problem 7 — 422 Unprocessable Content
 
@@ -539,7 +532,7 @@ category
 
 were missing.
 
-⸻
+
 
 ##### Problem 8 — NameError
 
@@ -550,7 +543,7 @@ NameError: load_notes is not defined
 ```
 
 
----
+
 
 #### 3. 💡 How did I overcome them?
 I solved the issues step by step through debugging, testing, and restructuring the backend carefully.
@@ -566,7 +559,7 @@ Main solutions included:
 
 Specific fixes included:
 
-⸻
+
 
 ### Fix for Duplicate Endpoints
 
@@ -588,7 +581,7 @@ def list_courses(
     }
 ```
 
----
+
 
 ### Fix for Undefined Variables
 
@@ -604,7 +597,7 @@ return {
 
 This allowed me to continue testing the API structure safely.
 
----
+
 
 ### Fix for Wrong Default Type
 
@@ -622,7 +615,7 @@ search: str = ""
 
 so the type and default value matched correctly.
 
----
+
 
 ### Fix for `pass` Statements
 
@@ -646,7 +639,7 @@ def get_student_course(student_id: int, course_id: int):
     }
 ```
 
----
+
 
 ### Fix for Route Matching Problems
 
@@ -665,7 +658,7 @@ Correct structure:
 @app.get("/test/{value}")
 ```
 
----
+
 
 ### Fix for 404 Errors
 
@@ -683,7 +676,7 @@ POST /notes
 
 After creating the note successfully, the GET request worked correctly.
 
-⸻
+
 
 ### Fix for 422 Validation Errors
 
@@ -699,13 +692,13 @@ Correct example:
 }
 ```
 
----
+
 
 ### Fix for NameError Problems
 
 I added missing helper functions and ensured they were defined before being used.
 
----
+
 
 ## What I Learned Today
 
@@ -727,7 +720,7 @@ During Day 3 I learned:
 - Common backend debugging techniques
 - Better API architecture practices
 
----
+
 
 ## Week 2
 
@@ -793,7 +786,7 @@ I faced several debugging and migration problems while combining old JSON-based 
 
 One difficult part was identifying which endpoints were still using the old `notes_db` logic.
 
----
+
 
 #### 3. 💡 How Did I Overcome Them?
 
@@ -831,7 +824,6 @@ I solved the issues step by step by debugging each error carefully and testing a
 ### Day 5
 
 #### 1. ✅ What did I accomplish?
-# Work Log — Day 5
 
 ## Topic: Pydantic Validation & FastAPI API Hardening
 
@@ -1311,6 +1303,7 @@ Built my first real full-stack application using:
 Today I faced several frontend and integration challenges.
 
 ### Streamlit Problems
+
 
 - Streamlit file not found errors
 - Accidentally creating a file named:
