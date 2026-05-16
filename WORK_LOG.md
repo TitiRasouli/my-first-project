@@ -909,86 +909,94 @@ uv run pytest
 
 Finally, I committed and pushed all project changes to GitHub successfully.
 
-Technologies and tools used today:
+### Technologies and Tools Used Today
 
-* Python
-* FastAPI
-* Pydantic v2
-* SQLModel
-* SQLite
-* pytest
-* Swagger Docs (/docs)
-* Git & GitHub
-* VS Code
+- Python
+- FastAPI
+- Pydantic v2
+- SQLModel
+- SQLite
+- pytest
+- Swagger Docs (`/docs`)
+- Git & GitHub
+- VS Code
 
 ---
 
-#### 2. 🚧 What challenges did I face?
+#### 2. 🚧 What Challenges Did I Face?
+
 Today I faced several technical challenges while integrating strict validation into the FastAPI application.
 
 One of the biggest challenges was understanding the difference between:
 
-* endpoint validation
-* field validation
-* model validation
-* database-level validation
+- endpoint validation
+- field validation
+- model validation
+- database-level validation
 
 At the beginning, it was not always clear where certain logic should belong.
 
 Another challenge was the conflict between:
 
-* Field from Pydantic
-* Field from SQLModel
+- `Field` from Pydantic
+- `Field` from SQLModel
 
 This caused runtime errors such as:
-Plain text:
+
+```text
 TypeError: Field() got an unexpected keyword argument 'pattern'
+```
+
 I also encountered multiple validation-related errors:
 
-* HTTP 422 responses
-* failing pytest tests
-* import issues
-* datetime serialization warnings
-* deprecated Pydantic configuration warnings
+- HTTP 422 responses
+- failing pytest tests
+- import issues
+- datetime serialization warnings
+- deprecated Pydantic configuration warnings
 
 Another difficult part was implementing cross-field validation correctly using:
-Python:
+
+```python
 @model_validator(mode="after")
+```
+
 because this validation depends on multiple fields at the same time.
 
 I also had to debug why certain requests failed even though the JSON looked correct.
 
 Several tests failed because the old test data no longer matched the new stricter validation rules.
 
+#### 3. 💡 How Did I Overcome Them?
 
----
-
-#### 3. 💡 How did I overcome them?
 I solved these problems step by step by carefully reading error messages, testing API requests manually, and debugging validation behavior directly inside the models.
 
-To fix the Field conflicts, I separated the imports correctly and used:
+To fix the `Field` conflicts, I separated the imports correctly and used:
 
-* Pydantic Field for validation models
-* SQLModel Field for database models
+- Pydantic `Field` for validation models
+- SQLModel `Field` for database models
 
-I fixed the deprecated Pydantic configuration warning by replacing old class Config usage with:
-Python:
+I fixed the deprecated Pydantic configuration warning by replacing the old `class Config` usage with:
+
+```python
 model_config = ConfigDict(...)
-I also fixed datetime warnings by removing unnecessary .isoformat() conversions and using proper datetime objects.
+```
 
-To debug validation problems, I repeatedly tested the API through Swagger Docs and inspected HTTP 422 responses carefully.
+I also fixed datetime warnings by removing unnecessary `.isoformat()` conversions and using proper `datetime` objects.
+
+To debug validation problems, I repeatedly tested the API through Swagger Docs and inspected HTTP `422` responses carefully.
 
 When pytest tests failed, I updated the test payloads to follow the new validation rules and reran the tests until all of them passed successfully.
 
 By the end of the day, I had a much better understanding of:
 
-* Pydantic v2 validation
-* FastAPI request validation
-* model validators
-* field validators
-* API hardening
-* debugging validation errors
-* writing stricter backend logic
+- Pydantic v2 validation
+- FastAPI request validation
+- model validators
+- field validators
+- API hardening
+- debugging validation errors
+- writing stricter backend logic
 
 Today’s work significantly improved both the quality and reliability of my Notes API project.
 
@@ -997,13 +1005,14 @@ Today’s work significantly improved both the quality and reliability of my Not
 
 ### Day 6
 
-#### 1. What did I accomplish?
+#### 1. ✅ What Did I Accomplish?
 
 Today I completed a fully functional Notes API project using FastAPI, SQLModel, and SQLite.
 
-Main accomplishments:
+### Main Accomplishments
 
 - Built a complete REST API for notes management
+
 - Implemented full CRUD functionality:
   - Create notes
   - Read notes
@@ -1019,89 +1028,101 @@ Main accomplishments:
   - Filter notes created before or after a specific date
 
 - Implemented PATCH and PUT endpoints correctly
+
 - Added validation for invalid requests and dates
-- Implemented statistics endpoints:
-  - Total notes count
-  - Unique tags count
-  - Notes grouped by category
-  - Top tags endpoint
 
-- Added tags functionality:
-  - Tag normalization
-  - Lowercasing tags
-  - Removing duplicate tags
-  - Empty tags support
-  - Case-insensitive tag lookup
+### Statistics Endpoints
 
-- Implemented categories endpoints
-- Added endpoints for:
-  - /tags
-  - /categories
-  - /notes/stats
-  - /tags/{tag}/notes
-  - /categories/{category}/notes
+Implemented endpoints for:
 
-- Successfully passed all automated tests:
-  - 70 tests passed
+- Total notes count
+- Unique tags count
+- Notes grouped by category
+- Top tags endpoint
 
-- Successfully used Git and GitHub:
-  - Added .gitignore
-  - Removed cache files
-  - Created commits
-  - Pushed the project to GitHub
+### Tags Functionality
 
+Implemented:
+
+- Tag normalization
+- Lowercasing tags
+- Removing duplicate tags
+- Empty tags support
+- Case-insensitive tag lookup
+
+### Additional Endpoints
+
+Added endpoints for:
+
+- `/tags`
+- `/categories`
+- `/notes/stats`
+- `/tags/{tag}/notes`
+- `/categories/{category}/notes`
+
+### Automated Testing
+
+- Successfully passed all automated tests
+- `70 tests passed`
+
+### Git & GitHub Workflow
+
+Successfully used Git and GitHub:
+
+- Added `.gitignore`
+- Removed cache files
+- Created commits
+- Pushed the project to GitHub
 
 ---
 
-#### 2. What challenges did I face?
+#### 2. 🚧 What Challenges Did I Face?
 
 Today I faced many backend development and debugging challenges.
 
-Main technical problems:
+### API and Backend Problems
 
-##### API and Backend Problems
-
-- Multiple 500 Internal Server Errors
-- 404 Not Found errors
-- 405 Method Not Allowed errors
+- Multiple `500 Internal Server Errors`
+- `404 Not Found` errors
+- `405 Method Not Allowed` errors
 - FastAPI route conflicts
 - API not reachable issues
 - Uvicorn server startup failures
 - Port already in use errors
 
-##### Database and SQLModel Problems
+### Database and SQLModel Problems
 
 - SQLite schema mismatch errors
 - Database migration problems after adding new fields
-- "table note has no column named tags"
+- `"table note has no column named tags"`
 - Problems rebuilding the database
 - Relationship and tags handling issues
 
-##### Validation and Response Problems
+### Validation and Response Problems
 
 - Missing tags in API responses
 - Incorrect response structures
-- KeyError: 'tags'
+- `KeyError: 'tags'`
 - Invalid date validation issues
 - Incorrect response models
 - Wrong status codes returned
 - PATCH endpoint validation problems
-- PUT endpoint returning 500 errors
+- PUT endpoint returning `500` errors
 
-##### Python and Syntax Problems
+### Python and Syntax Problems
 
-- IndentationError
-- SyntaxError
-- "return outside function"
-- "expected an indented block after for"
+- `IndentationError`
+- `SyntaxError`
+- `"return outside function"`
+- `"expected an indented block after for"`
 - Parentheses not closed
 - Wrong indentation levels
 - Variables defined outside function scope
 
-##### Logic Problems
+### Logic Problems
 
 - Statistics calculations returning wrong values
-- by_category statistics always empty
+- `by_category` statistics always empty
 - Tags endpoint returning empty lists
 - Notes by tag endpoint returning empty results
 - Filtering logic not working correctly
@@ -1109,53 +1130,60 @@ Main technical problems:
 - PATCH not preserving existing data
 - Tags not updating correctly
 
-##### Git and Project Management Problems
+### Git and Project Management Problems
 
 - Git tracking unwanted files:
-  - __pycache__
-  - *.pyc
-  - notes.db
+  - `__pycache__`
+  - `*.pyc`
+  - `notes.db`
 
 - Problems staging files correctly
-- Managing .gitignore
+- Managing `.gitignore`
 - Cleaning temporary files before commit
-
 
 ---
 
-#### 3. How did I overcome them?
+#### 3. 💡 How Did I Overcome Them?
 
 I solved the issues systematically using debugging, testing, and incremental improvements.
 
-Main solutions:
-
-##### Debugging Strategy
+### Debugging Strategy
 
 - Read traceback messages carefully
+
 - Used pytest continuously:
-  uv run pytest test_notes_api.py -v -x
+
+```bash
+uv run pytest test_notes_api.py -v -x
+```
 
 - Solved one failing test at a time
 - Used server logs to identify exact backend failures
 - Restarted Uvicorn after important changes
 
-##### Backend Fixes
+---
+
+### Backend Fixes
 
 - Added missing endpoints
 - Corrected FastAPI decorators
-- Fixed response_model definitions
-- Added proper HTTPException handling
+- Fixed `response_model` definitions
+- Added proper `HTTPException` handling
 - Fixed PATCH and PUT logic
 - Added missing route handlers
 
-##### Database Fixes
+---
+
+### Database Fixes
 
 - Rebuilt SQLite database after schema changes
-- Removed old notes.db when schema became outdated
+- Removed old `notes.db` when schema became outdated
 - Fixed tags field handling
 - Corrected SQLModel interactions
 
-##### Code Structure Improvements
+---
+
+### Code Structure Improvements
 
 - Fixed indentation issues
 - Moved misplaced return statements
@@ -1163,27 +1191,31 @@ Main solutions:
 - Fixed loops and conditional blocks
 - Improved endpoint organization
 
-##### API Logic Improvements
+---
+
+### API Logic Improvements
 
 - Added proper filtering logic
-- Implemented date validation with datetime typing
+- Implemented date validation with `datetime` typing
 - Fixed statistics calculations
 - Corrected category aggregation
 - Implemented tag normalization
 - Added case-insensitive search and filtering
 
-##### Git Improvements
+---
 
-- Added proper .gitignore
+### Git Improvements
+
+- Added proper `.gitignore`
 - Removed cache files from repository
 - Cleaned tracked temporary files
 - Created clean commits
-- Successfully pushed final project to GitHub
+- Successfully pushed the final project to GitHub
 
 
 ---
 
-#### 4. What did I learn today?
+#### 4. 📚 What Did I Learn Today?
 
 Today I learned many practical backend development concepts:
 
@@ -1197,11 +1229,10 @@ Today I learned many practical backend development concepts:
 - Debugging backend applications
 - Reading Python tracebacks
 - Managing Git repositories professionally
-- Using .gitignore effectively
+- Using `.gitignore` effectively
 - Structuring backend projects properly
 
 This was one of the most difficult and educational development days so far.
-
 
 ---
 
@@ -1209,18 +1240,18 @@ This was one of the most difficult and educational development days so far.
 
 ### Day 7
 
-#### 1. What did I accomplish?
+#### 1. ✅ What Did I Accomplish?
 
 Today I learned the basics of frontend development using Streamlit and connected it to my existing FastAPI Notes API project.
 
-Main accomplishments:
+### Main Accomplishments
 
 - Installed and configured Streamlit
 - Created my first Streamlit application
 - Learned how Streamlit automatically updates the UI
 - Built a frontend for the Notes API
 
-Frontend features implemented:
+### Frontend Features Implemented
 
 - Display all notes from the backend API
 - Show note details using expandable sections
@@ -1230,59 +1261,75 @@ Frontend features implemented:
   - category
   - tags
 
-- Connected Streamlit frontend to FastAPI backend using requests
+- Connected the Streamlit frontend to the FastAPI backend using `requests`
 - Successfully retrieved live data from the API
 - Created a form for creating new notes
-- Sent POST requests from the frontend to the backend
+- Sent `POST` requests from the frontend to the backend
 - Automatically refreshed the frontend after creating notes
-- Learned how to use:
-  - st.title()
-  - st.header()
-  - st.write()
-  - st.expander()
-  - st.form()
-  - st.text_input()
-  - st.text_area()
-  - st.form_submit_button()
-  - st.success()
-  - st.error()
-  - st.rerun()
 
-- Successfully ran:
-  - FastAPI backend
-  - Streamlit frontend
-  simultaneously
+### Streamlit Components Learned
 
-- Built my first real full-stack application:
-  - FastAPI backend
-  - SQLite database
-  - Streamlit frontend
-  - API integration
+- `st.title()`
+- `st.header()`
+- `st.write()`
+- `st.expander()`
+- `st.form()`
+- `st.text_input()`
+- `st.text_area()`
+- `st.form_submit_button()`
+- `st.success()`
+- `st.error()`
+- `st.rerun()`
+
+### Running Multiple Services
+
+Successfully ran:
+
+- FastAPI backend
+- Streamlit frontend
+
+simultaneously.
+
+### Full-Stack Application
+
+Built my first real full-stack application using:
+
+- FastAPI backend
+- SQLite database
+- Streamlit frontend
+- API integration
+
+### Final Results
 
 - Successfully tested frontend-backend communication
 - Successfully pushed the frontend project updates to GitHub
 
-
 ---
 
-#### 2. What challenges did I face?
+#### 2. 🚧 What Challenges Did I Face?
 
 Today I faced several frontend and integration challenges.
 
-Main problems:
-
-##### Streamlit Problems
+### Streamlit Problems
 
 - Streamlit file not found errors
 - Accidentally creating a file named:
-  touch frontend.py
-  instead of frontend.py
+
+```text
+touch frontend.py
+```
+
+instead of:
+
+```text
+frontend.py
+```
 
 - Streamlit app not reloading correctly
 - Browser showing empty pages
 - Streamlit process stopping unexpectedly
 
-##### FastAPI and Backend Problems
+### FastAPI and Backend Problems
 
 - FastAPI server conflicts
 - Address already in use errors
@@ -1291,24 +1338,27 @@ Main problems:
 - Backend process running in the background incorrectly
 - Swagger/docs not loading initially
 
-##### Integration Problems
+### Integration Problems
 
-- Frontend showing empty notes list
+- Frontend showing an empty notes list
 - Frontend not displaying API data
-- Streamlit not receiving notes from backend
+- Streamlit not receiving notes from the backend
 - Browser refresh issues
 - Communication problems between frontend and backend
 
-##### Terminal and Process Problems
+### Terminal and Process Problems
 
 - Multiple terminals becoming confusing
 - Accidentally stopping the wrong process
-- Ctrl+C interrupt issues
+- `Ctrl + C` interrupt issues
 - Killing old processes manually using:
-  lsof -i :8000
-  kill -9 PID
 
-##### General Debugging Problems
+```bash
+lsof -i :8000
+kill -9 PID
+```
+
+### General Debugging Problems
 
 - Understanding which service was failing:
   - Streamlit
@@ -1316,55 +1366,57 @@ Main problems:
   - Browser
   - API connection
 
-- Debugging frontend/backend integration step-by-step
+- Debugging frontend/backend integration step by step
 
 
----
-
-#### 3. How did I overcome them?
+#### 3. 💡 How Did I Overcome Them?
 
 I solved the problems systematically by debugging each layer independently.
 
-Main solutions:
+### Frontend Solutions
 
-##### Frontend Solutions
-
-- Correctly renamed frontend.py
+- Correctly renamed `frontend.py`
 - Restarted Streamlit properly
 - Refreshed the browser after backend changes
 - Used Streamlit forms and rerun functionality correctly
 
-##### Backend Solutions
+### Backend Solutions
 
 - Detected running processes with:
-  lsof -i :8000
+
+```bash
+lsof -i :8000
+```
 
 - Killed broken FastAPI processes
 - Restarted Uvicorn cleanly
 - Verified API endpoints using Swagger UI
-- Tested API responses before debugging frontend
+- Tested API responses before debugging the frontend
 
-##### Integration Solutions
+### Integration Solutions
 
-- Tested API manually through:
-  /docs
+- Tested the API manually through:
 
-- Verified JSON responses from backend
+```text
+/docs
+```
+
+- Verified JSON responses from the backend
 - Confirmed notes existed in the database
-- Connected requests.get() and requests.post() correctly
+- Connected `requests.get()` and `requests.post()` correctly
 - Refreshed Streamlit after creating notes
 
-##### Process Management Improvements
+### Process Management Improvements
 
 - Learned how to run:
   - FastAPI in one terminal
   - Streamlit in another terminal
 
-- Improved understanding of local development workflow
+- Improved my understanding of the local development workflow
 
-##### Debugging Improvements
+### Debugging Improvements
 
-- Debugged problems layer-by-layer:
+- Debugged problems layer by layer:
   1. Backend
   2. API endpoint
   3. Frontend
@@ -1373,13 +1425,12 @@ Main solutions:
 - Used terminal logs and error messages effectively
 
 
----
 
-#### 4. What did I learn today?
+#### 4. 📚 What Did I Learn Today?
 
 Today I learned many important frontend and full-stack development concepts.
 
-Main learning outcomes:
+### Main Learning Outcomes
 
 - Basics of frontend development
 - Building GUIs with Streamlit
@@ -1393,6 +1444,8 @@ Main learning outcomes:
 - Using forms and dynamic UI updates
 - Testing APIs before frontend integration
 - Managing processes and ports in local development
+
+### Major Milestone
 
 Most importantly, today I built my first real full-stack application using Python only.
 
