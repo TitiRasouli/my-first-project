@@ -18,7 +18,7 @@ _Reflect on the activities, exercises, and work you completed today._
 - What tools or technologies did you use?
 - What did you learn or practice?
 
-
+---
 
 
 ## 2. 🚧 What challenges did I face?
@@ -31,7 +31,7 @@ _Describe any difficulties, obstacles, or confusing moments you encountered._
 - What errors or problems did you face?
 - What felt frustrating or confusing?
 
-
+---
 
 
 ## 3. 💡 How did I overcome them?
@@ -44,7 +44,7 @@ _Explain how you overcame the challenges or what help you needed._
 - What did you learn from solving the problem?
 - What questions do you still have?
 
-
+---
 
 
 ## Week 1
@@ -92,7 +92,7 @@ I practiced:
 
 Because I was still learning the basics, I ran and rebuilt the project multiple times to better understand the workflow and structure.
 
-
+---
 
 
 #### 2. What challenges did I face?
@@ -115,7 +115,7 @@ Some challenges included:
 
 I also accidentally deleted or overwrote parts of the code several times and had to recreate sections of the project repeatedly.
 
-
+---
 
 
 #### 3. How did I overcome them?
@@ -142,7 +142,7 @@ I learned that:
 
 By the end of the session, I successfully ran the FastAPI server, tested multiple endpoints, and gained a much better understanding of how APIs work.
 
-
+---
 
 ### Day 2
 
@@ -200,7 +200,7 @@ Technologies and tools used today:
 * VS Code
 * Git & GitHub
 
-
+---
 
 #### 2.    What challenges did I face?
 
@@ -277,7 +277,7 @@ A trailing comma was accidentally added:
 
 JSON does not allow a comma after the final item.
 
-
+---
 
 
 #### 3. 💡 How did I overcome them?
@@ -348,7 +348,7 @@ After fixing the issues:
 
 By the end of Day 2, I had a much stronger understanding of FastAPI, request validation, backend debugging, and how API data persistence works.
 
-
+---
 
 ### Day 3
 
@@ -396,7 +396,7 @@ Technologies and tools used today:
 - VS Code
 - Git & GitHub
 
-
+---
 
 
 #### 2. 🚧 What challenges did I face?
@@ -421,7 +421,7 @@ Main challenges included:
 
 Specific problems included:
 
-
+---
 
 ##### Problem 1 — Duplicate `/courses` Endpoint
 
@@ -475,7 +475,7 @@ pass
 
 which caused the API to return no useful response.
 
-
+---
 
 ##### Problem 5 — Route Matching Confusion
 
@@ -493,7 +493,7 @@ can also match URLs such as:
 
 This caused confusion about which endpoint FastAPI would use.
 
-
+---
 
 
 ##### Problem 6 — 404 Not Found
@@ -512,7 +512,7 @@ I received:
 
 because no note with ID `1` existed yet.
 
-
+---
 
 ##### Problem 7 — 422 Unprocessable Content
 
@@ -532,7 +532,7 @@ category
 
 were missing.
 
-
+---
 
 ##### Problem 8 — NameError
 
@@ -542,7 +542,7 @@ FastAPI showed errors like:
 NameError: load_notes is not defined
 ```
 
-
+---
 
 
 #### 3. 💡 How did I overcome them?
@@ -559,7 +559,7 @@ Main solutions included:
 
 Specific fixes included:
 
-
+---
 
 ### Fix for Duplicate Endpoints
 
@@ -581,7 +581,7 @@ def list_courses(
     }
 ```
 
-
+---
 
 ### Fix for Undefined Variables
 
@@ -597,7 +597,7 @@ return {
 
 This allowed me to continue testing the API structure safely.
 
-
+---
 
 ### Fix for Wrong Default Type
 
@@ -615,7 +615,7 @@ search: str = ""
 
 so the type and default value matched correctly.
 
-
+---
 
 ### Fix for `pass` Statements
 
@@ -639,7 +639,7 @@ def get_student_course(student_id: int, course_id: int):
     }
 ```
 
-
+---
 
 ### Fix for Route Matching Problems
 
@@ -658,7 +658,7 @@ Correct structure:
 @app.get("/test/{value}")
 ```
 
-
+---
 
 ### Fix for 404 Errors
 
@@ -676,7 +676,7 @@ POST /notes
 
 After creating the note successfully, the GET request worked correctly.
 
-
+---
 
 ### Fix for 422 Validation Errors
 
@@ -692,13 +692,13 @@ Correct example:
 }
 ```
 
-
+---
 
 ### Fix for NameError Problems
 
 I added missing helper functions and ensured they were defined before being used.
 
-
+---
 
 ## What I Learned Today
 
@@ -720,7 +720,7 @@ During Day 3 I learned:
 - Common backend debugging techniques
 - Better API architecture practices
 
-
+---
 
 ## Week 2
 
@@ -761,6 +761,7 @@ I also migrated parts of the Notes API from JSON-based storage to SQLModel and S
 - Debugging traceback errors
 - Git workflow
 
+---
 
 #### 2. 🚧 What Challenges Did I Face?
 
@@ -786,7 +787,7 @@ I faced several debugging and migration problems while combining old JSON-based 
 
 One difficult part was identifying which endpoints were still using the old `notes_db` logic.
 
-
+---
 
 #### 3. 💡 How Did I Overcome Them?
 
@@ -820,6 +821,8 @@ I solved the issues step by step by debugging each error carefully and testing a
 - More advanced API tests
 - PATCH endpoint improvements
 - Authentication support
+ 
+---
 
 ### Day 5
 
@@ -958,6 +961,9 @@ because this validation depends on multiple fields at the same time.
 I also had to debug why certain requests failed even though the JSON looked correct.
 
 Several tests failed because the old test data no longer matched the new stricter validation rules.
+
+
+---
 
 #### 3. 💡 How Did I Overcome Them?
 
@@ -1361,6 +1367,7 @@ kill -9 PID
 
 - Debugging frontend/backend integration step by step
 
+---
 
 #### 3. 💡 How Did I Overcome Them?
 
@@ -1417,7 +1424,7 @@ lsof -i :8000
 
 - Used terminal logs and error messages effectively
 
-
+---
 
 #### 4. 📚 What Did I Learn Today?
 
